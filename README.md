@@ -7,6 +7,7 @@ The files are text, so they can be read, edited and compared in any editor and k
 
 The formats are specified in the [spec](spec/) folder.
 The reference implementation, which reads fonts of many formats into the database and writes them back, is [pixelglyphlib](https://github.com/SzieberthAdam/pixelglyphlib).
+The fonts of a database can be browsed and edited with [pxfe](https://github.com/SzieberthAdam/pxfe), a pixel font editor.
 
 ## Layout
 
