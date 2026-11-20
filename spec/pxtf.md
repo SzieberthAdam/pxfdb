@@ -122,7 +122,7 @@ This is Python's `repr` of a `float`, made upper case.
 
 ### Hashes and code points
 
-A hash is written as 32 upper-case hex digits: the first 32 hex digits of the SHA-256 of the file it names, or of its canonical form for a pxfm file.
+A hash is written as 32 upper-case hex digits: the first 32 hex digits of the SHA-256 of the canonical form of the file it names.
 A code point is written as six upper-case hex digits, as the `CCCCCC` of a code of the group `U` in a pxfm file, without its group and its variant.
 
 ## Top lines
