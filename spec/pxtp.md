@@ -57,12 +57,11 @@ A zip file with a pxfm file at the root and no pxtf file is a [pxfp](pxfp.md) pa
 The name of the package file itself is free.
 The zip file already carries the hashes of everything it holds, so a reader and an importer MUST NOT check or depend on the name or the extension of the file they are given.
 
-A writer SHOULD name it `<family>.pxtp`, after the family:
+A writer SHOULD name it `<name>.pxtp`, after the name of the typeface:
 
-- The family is the slug of the `FAMILY` of the pxtf file, which is its lower-case form with every run of characters other than letters and digits made one hyphen, none at the start or the end.
-- If the variants have different families, that of the first variant (the lowest variant number) is used.
-- A pxtf file that states no family gives `typeface`.
-- If a file of that name is there already with other bytes, such as the package of another source of the same family, the writer adds `-` and the first 8 hex digits of the pxtf hash before the extension.
+- The name is the slug of the `NAME` top line of the pxtf file, which is its lower-case form with every run of characters other than letters and digits made one hyphen, none at the start or the end.
+- A pxtf file that has no `NAME` line gives `typeface`.
+- If a file of that name is there already with other bytes, such as the package of another typeface of the same name, the writer adds `-` and the first 8 hex digits of the pxtf hash before the extension.
 
 This name is recommended, not required.
 

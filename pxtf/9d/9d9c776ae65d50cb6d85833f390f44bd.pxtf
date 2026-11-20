@@ -1,14 +1,14 @@
-FORMAT	TTF
-HASH	8D805274EAF227855147153182A96A86
-TYPE	ttf-outline
+NAME	Pixel Operator
 0001
 	COPYRIGHT	Released by Jayvee Enaguas (HarvettFox96) <harvettfox96 [at] protonmail [dot] com>, licensed under a Creative Commons Zero (CC0) 1.0 <https://creativecommons.org/licenses/zero/1.0/>. (c) 2009-2018.
 	DESIGNER	Jayvee Enaguas (HarvettFox96)
 	DESIGNERURL	mailto:harvettfox96 [at] protonmail [dot] com
-	FAMILY	Pixel Operator
-	FULLNAME	Pixel Operator
 	LICENSE	Creative Commons Zero (CC0) 1.0
 	LICENSEURL	https://creativecommons.org/licenses/zero/1.0/
+	NAME	Pixel Operator
 	PXFM	80341E4FC98802CCFD0108FA06493A00
+	SOURCE-FORMAT	TTF
+	SOURCE-HASH	8D805274EAF227855147153182A96A86
+	SOURCE-TYPE	ttf-outline
 	STYLE	Regular
 	VERSION	2018.10.04-1

@@ -1,6 +1,6 @@
 # pxfdb: pixel font database
 
-Version 1.
+Version 2.
 
 A pxfdb file is an SQLite database that holds the whole text database of a pixelglyphlib library: every [pxgl](pxgl.md) glyph file, every [hex](hex.md) palette file, every [pxfm](pxfm.md) metrics file and every [pxtf](pxtf.md) typeface file, orphans included.
 It is made for software and websites that have to query the library efficiently: which fonts hold a glyph, how alike two fonts are, which glyphs are drawn for a code point, which fonts have a given height.
@@ -160,13 +160,13 @@ One row per `KERNING` line, with the codes as integers, as in [pxfm_glyph](#pxfm
 
 ```sql
 CREATE TABLE pxtf (
-    hash   BLOB PRIMARY KEY,
-    source BLOB NOT NULL,
-    CHECK (length(hash) = 16 AND length(source) = 16)
+    hash BLOB PRIMARY KEY,
+    name TEXT,
+    CHECK (length(hash) = 16)
 ) WITHOUT ROWID;
 ```
 
-One row per pxtf file; `source` is its `HASH` line, the hash of the source file.
+One row per pxtf file; `name` is its `NAME` top line, the name of the typeface, with its escapes undone, or `NULL` when it has none.
 
 ### pxtf_variant
 
@@ -175,6 +175,7 @@ CREATE TABLE pxtf_variant (
     pxtf   BLOB NOT NULL REFERENCES pxtf,
     number INTEGER NOT NULL CHECK (number > 0),
     pxfm   BLOB NOT NULL REFERENCES pxfm,
+    source BLOB NOT NULL CHECK (length(source) = 16),
     format TEXT NOT NULL,
     type   TEXT NOT NULL,
     PRIMARY KEY (pxtf, number)
@@ -184,7 +185,8 @@ CREATE TABLE pxtf_variant (
 One row per variant.
 `number` is the variant number as an integer; it is written with at least four digits.
 `pxfm` is its `PXFM` line.
-`format` and `type` are those of the file's top lines, or of the variant's own lines when the variants differ; the text is unescaped.
+`source` is its `SOURCE-HASH` line, the hash of the source file.
+`format` and `type` are its `SOURCE-FORMAT` and `SOURCE-TYPE` lines; the text is unescaped.
 
 ### pxtf_field
 
@@ -199,9 +201,9 @@ CREATE TABLE pxtf_field (
 ) WITHOUT ROWID;
 ```
 
-One row per other line of a variant, so a repeated key (`IGNORE`) is several rows and a key can be added to the format without a change of the schema.
+One row per other line of a variant (not `PXFM` and the `SOURCE-` lines), so a repeated key (`IGNORE`) is several rows and a key can be added to the format without a change of the schema.
 `key` is the upper-case key.
-`value` is, for a key with a text field (`COPYRIGHT`, `DESCRIPTION`, `DESIGNER`, `DESIGNERURL`, `FAMILY`, `FULLNAME`, `LICENSE`, `LICENSEURL`, `SLANT`, `STYLE`, `TRADEMARK`, `VENDOR`, `VENDORURL`, `VERSION`, `WEIGHTNAME`, `CODEPAGE`), the text with its escapes undone; for a key without a field (`ITALIC`, `STRUCKOUT`, `UNDERLINED`), the empty string; for any other key, its fields joined by tabs, as written (`GRID` `44.487\t44.487\t0\t0\tPERGLYPH`, `IGNORE` `0000C0\t0000FF`, `CELL` `8x16`, `CHARSET` `0`, `PFM` the 32 digits in upper case).
+`value` is, for a key with a text field (`COPYRIGHT`, `DESCRIPTION`, `DESIGNER`, `DESIGNERURL`, `LICENSE`, `LICENSEURL`, `NAME`, `SLANT`, `STYLE`, `TRADEMARK`, `VENDOR`, `VENDORURL`, `VERSION`, `WEIGHTNAME`, `CODEPAGE`), the text with its escapes undone; for a key without a field (`ITALIC`, `STRUCKOUT`, `UNDERLINED`), the empty string; for any other key, its fields joined by tabs, as written (`GRID` `44.487\t44.487\t0\t0\tPERGLYPH`, `IGNORE` `0000C0\t0000FF`, `CELL` `8x16`, `CHARSET` `0`, `PFM` the 32 digits in upper case).
 
 ## Indexes
 
@@ -240,7 +242,6 @@ It stops at the first file that fails, and the old database, if there is one, st
    The lines must be the lines the writer would write: sorted by their bytes, each once; a file that is not is an error.
 5. A pxtf file is read by the strict reader of [pxtf](pxtf.md), and must be what the writer would write from what was read.
    A pxfm file it names must be in the library.
-   The top lines `FORMAT` and `TYPE` are copied into every variant; they are put at the top again on export when all the variants are the same, as the specification demands.
 6. The glyph files, the palette files and the pxfm files that nothing names are stored all the same.
 
 ## Converting the database into the files
@@ -251,7 +252,7 @@ It stops at the first file that fails, and the old database, if there is one, st
   A glyph whose colours are not numbered in reading order is refused.
 - A hex file is the colours of `colors`, a line each, six upper-case hex digits when the alpha is `FF` and eight otherwise, each ended with LF.
 - A pxfm file is made of the lines of its columns and rows, in the form of the specification: the metric lines `KEY<TAB>integer` of the columns that are not `NULL`, `RATIO<TAB>A:B`, `MONOSPACED`, `SYMBOLIC`, `COLORS<TAB>colors` when `colors` is not `NULL`, `GLYPH<TAB>code<TAB>advance<TAB>x<TAB>y[<TAB>HASH[<TAB>PALETTE]]` from the rows of `pxfm_glyph`, the code written `G+CCCCCC-VVV` and the hashes in upper case, with none for a `NULL` glyph and none for a `NULL` palette, and `KERNING<TAB>first<TAB>second<TAB>adjust`; then the lines are sorted by their bytes and each ended with LF.
-- A pxtf file has the `HASH` line, `FORMAT` and `TYPE` at the top when all the variants have the same, else in each variant; then each variant as its number with at least four digits and its lines: `PXFM` and the rows of `pxtf_field` (text values escaped as in [pxtf](pxtf.md#text), keys without a field alone), sorted by their bytes, each after a tab.
+- A pxtf file has the `NAME` line at the top when `name` is not `NULL`; then each variant as its number with at least four digits and its lines: `PXFM`, `SOURCE-FORMAT`, `SOURCE-HASH` and `SOURCE-TYPE` from its row of `pxtf_variant`, and the rows of `pxtf_field` (text values escaped as in [pxtf](pxtf.md#text), keys without a field alone), sorted by their bytes, each after a tab.
 
 The hash of each file made is checked against its key before anything is written.
 Then a first pass looks at every target path: a file that is there with the same bytes is left, and if one is there with other bytes (or a folder is in the way), `export` stops with an error before it has written a file.

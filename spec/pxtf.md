@@ -1,11 +1,12 @@
 # pxtf: pixel typeface
 
-Version 1.
+Version 2.
 
-A pxtf file describes a typeface: the fonts of one source file.
-It tells the format of the source file, and for each font read from it (each variant) what the source states about that font, how the font is read from it, and the hash of the font's [pxfm](pxfm.md) file.
-Following typographic tradition, the typeface is the family as the source file gives it, and a font is one of its variants with its own metrics and glyphs, which the pxfm file holds.
+A pxtf file describes a typeface: its name and its fonts.
+For each font (each variant) it tells the source file the font is read from and its format, what the source states about that font, how the font is read from it, and the hash of the font's [pxfm](pxfm.md) file.
+Following typographic tradition, a typeface is a family of fonts, and a font is one of its variants with its own metrics and glyphs, which the pxfm file holds.
 A source file can hold several fonts, such as the sizes of a Windows FON file or the 8 and the 9 dots wide reading of a VGA font dump; each is a variant, numbered from 1.
+The variants of a typeface can come from one source file or from several.
 
 The pxtf file is named by the hash of its canonical form, as pxfm and [pxgl](pxgl.md) files are.
 The font JSON copies beside the source file in pixelglyphlib record that hash.
@@ -18,33 +19,36 @@ In the examples, the fields are separated by tab characters, and the lines of a 
 A Windows FON file of two fonts:
 
 ```
-FORMAT	FON
-HASH	43B49707749923470CDD7F5FCD6A552D
-TYPE	fnt-v2
+NAME	ASI_Mono
 0001
 	CHARSET	0
 	COPYRIGHT	(c)Copyright Altura Software Inc. 1992. All rights reserved
-	FAMILY	ASI_Mono
 	PXFM	FBB120E8372CDFA484F0107DFBA46860
+	SOURCE-FORMAT	FON
+	SOURCE-HASH	43B49707749923470CDD7F5FCD6A552D
+	SOURCE-TYPE	fnt-v2
 	STYLE	Regular
 0002
 	CHARSET	0
 	COPYRIGHT	(c) Copyright Microsoft Corp. 1987. All rights reserved.
-	FAMILY	ASI_Mono
 	PXFM	7F3882B4A3788FDE3BC0111426A12C8F
+	SOURCE-FORMAT	FON
+	SOURCE-HASH	43B49707749923470CDD7F5FCD6A552D
+	SOURCE-TYPE	fnt-v2
 	STYLE	Regular
 ```
 
-Its hash is `97d45d22be0ae656b9e567288f7dbe7b`, so it is stored as `pxtf/97/97d45d22be0ae656b9e567288f7dbe7b.pxtf`.
+Its hash is `201c9ca4b9c357621f90cdf98ac47321`, so it is stored as `pxtf/20/201c9ca4b9c357621f90cdf98ac47321.pxtf`.
 
-The source file is the one whose SHA-256 begins with `43b49707749923470cdd7f5fcd6a552d`.
+The typeface is named `ASI_Mono`.
+Both of its fonts are read from the source file whose SHA-256 begins with `43b49707749923470cdd7f5fcd6a552d`.
 It is a FON file whose fonts are read as FNT version 2 resources.
 Its first font is the one whose metrics and glyphs the pxfm file `fbb120e8372cdfa484f0107dfba46860.pxfm` holds.
 
 ## What it holds
 
-- The hash of the source file, its format and how it is read.
-- For each variant: what the source states about the font (names, copyright, licence, weight name, slant, italic, underlined and struck-out, and the like), the options that the font is read with, and the hash of its pxfm file.
+- The name of the typeface.
+- For each variant: the hash of its source file, the format of that file and how it is read, what the source states about the font (its name, copyright, licence, weight name, slant, italic, underlined and struck-out, and the like), the options that the font is read with, and the hash of its pxfm file.
 
 Left out are the original name of the source file, where it was found, and what the library made of the font: its id, notes, whether it is approved, and measurements such as how well its outlines lie on the pixel grid.
 What the font looks like and measures is in its pxfm file, not here.
@@ -78,7 +82,7 @@ A source file has one pxtf file at a time: when a font of it is added, changed o
 
 The file has three parts, in this order:
 
-1. The top lines, which tell about the source file: a key and its fields, separated by tabs.
+1. The top line, which tells the name of the typeface: a key and its field, separated by a tab.
 2. For each variant, in ascending order, a line of its number alone.
 3. After each variant number, the lines of that variant: a tab, then a key and its fields, separated by tabs.
 
@@ -95,7 +99,7 @@ A field holds no tab and no line end; in a text field these are escaped (see [Te
 
 A variant number is written in decimal with at least four digits, padded with zeros: `0001`, `0002`, `0010`, `12345`.
 Variant numbers begin at 1, and no number occurs twice.
-They need not follow each other: a font of a source can be gone while the others keep their numbers.
+They need not follow each other: a font of a typeface can be gone while the others keep their numbers.
 
 ### Text
 
@@ -125,30 +129,20 @@ This is Python's `repr` of a `float`, made upper case.
 A hash is written as 32 upper-case hex digits: the first 32 hex digits of the SHA-256 of the canonical form of the file it names.
 A code point is written as six upper-case hex digits, as the `CCCCCC` of a code of the group `U` in a pxfm file, without its group and its variant.
 
-## Top lines
+## Top line
 
 | Key | Fields | Count |
 | --- | --- | --- |
-| `FORMAT` | the format of the source file | exactly one, here or in every variant |
-| `HASH` | the hash of the source file | exactly one |
-| `TYPE` | how the fonts are read from the source file | exactly one, here or in every variant |
+| `NAME` | the name of the typeface, text | at most one |
 
-`HASH` is the first 32 hex digits of the SHA-256 of the source file's bytes, in upper case.
-The source file is not made canonical: its bytes are hashed as they are.
-
-`FORMAT` is the format of the source file, in upper-case letters and digits.
-pixelglyphlib writes `BDF`, `FON`, `OTF`, `PCF`, `PFB`, `RAW`, `RECORDS`, `SHEET` and `TTF`.
-
-`TYPE` is a text field that names how the fonts are read, as pixelglyphlib knows it: `fnt-v2` and `fnt-v3` for the FNT resources of a FON file, `ttf-gid`, `otf-gid` and `pfb-gid` for outline fonts read glyph by glyph, `raw-msb` and `raw-msb-9col` for bitmap dumps, `sheet-png` for an image, and so on.
-
-When all the variants have the same `FORMAT`, it is a top line; when they differ, every variant has its own `FORMAT` line and there is no top line.
-The same goes for `TYPE`.
-A reader MUST reject a file that has a `FORMAT` or `TYPE` both at the top and in a variant, has it neither at the top nor in every variant, or has the same one in every variant.
+`NAME` is the name of the typeface, the family name as the source states it.
+A typeface whose source states no family name has no `NAME` line, unless the library gives it one.
+A typeface with no variant MUST have a `NAME` line.
 
 ## Variant lines
 
 Each key occurs at most once in a variant, except `IGNORE`.
-`PXFM` is the only key every variant MUST have.
+`PXFM`, `SOURCE-FORMAT`, `SOURCE-HASH` and `SOURCE-TYPE` are the keys every variant MUST have.
 
 ### PXFM
 
@@ -158,6 +152,32 @@ Each key occurs at most once in a variant, except `IGNORE`.
 
 The hash of the variant's [pxfm](pxfm.md) file, in upper case.
 Two variants can have the same pxfm file, when they look and measure the same.
+
+### The source file
+
+| Key | Fields |
+| --- | --- |
+| `SOURCE-FORMAT` | the format of the source file |
+| `SOURCE-HASH` | the hash of the source file |
+| `SOURCE-TYPE` | how the font is read from the source file |
+
+`SOURCE-HASH` is the first 32 hex digits of the SHA-256 of the source file's bytes, in upper case.
+The source file is not made canonical: its bytes are hashed as they are.
+
+`SOURCE-FORMAT` is the format of the source file, in upper-case letters and digits.
+pixelglyphlib writes `BDF`, `FON`, `OTF`, `PCF`, `PFB`, `PNG`, `RAW`, `RECORDS`, `SHEET` and `TTF`.
+
+`SOURCE-TYPE` is a text field that names how the font is read, as pixelglyphlib knows it: `fnt-v2` and `fnt-v3` for the FNT resources of a FON file, `ttf-gid`, `otf-gid` and `pfb-gid` for outline fonts read glyph by glyph, `raw-msb` and `raw-msb-9col` for bitmap dumps, `sheet-png` for an image, and so on.
+
+### A font made in an editor
+
+A font can be made in a font editor instead of being read from a source file.
+Its `SOURCE-FORMAT` is `PXFE` and its `SOURCE-TYPE` is `pxfe`.
+Its `SOURCE-HASH` is 32 random upper-case hex digits, since there is no source file to hash.
+It has no reading options: its font is its pxfm file.
+
+A typeface can also be made in an editor; then it can have no variant, and holds its `NAME` line alone.
+A variant can name a font that another typeface names too, and a variant copied from another typeface keeps its source lines.
 
 ### What the source states
 
@@ -169,10 +189,9 @@ Each of these keys holds a text field, as the source file states it:
 | `DESCRIPTION` | a description of the font |
 | `DESIGNER` | the name of the designer |
 | `DESIGNERURL` | the web address of the designer |
-| `FAMILY` | the family name |
-| `FULLNAME` | the full name |
 | `LICENSE` | the licence |
 | `LICENSEURL` | the web address of the licence |
+| `NAME` | the full name of the font |
 | `SLANT` | the slant, as a BDF or PCF font states it, such as `R` or `I` |
 | `STYLE` | the style name, such as `Regular` or `Bold` |
 | `TRADEMARK` | the trademark notice |
@@ -182,6 +201,7 @@ Each of these keys holds a text field, as the source file states it:
 | `WEIGHTNAME` | the weight name, as a BDF or PCF font states it, such as `Medium` or `Bold` |
 
 What the source does not state is left out.
+The family name the source states is not a variant line: it is the `NAME` of the typeface.
 
 Three more keys have no field at all, a key alone on its line with no tab after it.
 Each is written only when the source says that this variant has the property:
@@ -199,7 +219,7 @@ For a source that states nothing, such as a raw dump, these are what the library
 
 ### Reading options
 
-These say how the variant is read from the source file, as far as the variant number and `TYPE` do not:
+These say how the variant is read from the source file, as far as the variant number and `SOURCE-TYPE` do not:
 
 | Key | Fields | Meaning |
 | --- | --- | --- |
@@ -227,11 +247,12 @@ A reader MUST reject a variant line of any other key.
 
 ## Order
 
-The top lines come first, sorted by their bytes.
+The top line comes first.
 The variants follow in ascending order of their numbers, each number followed by the lines of that variant, sorted by their bytes.
 A line that would occur twice in one place is written once.
 
-The top lines thus come in the order `FORMAT`, `HASH`, `TYPE`, and the lines of a variant in the alphabetical order of their keys, since the keys are upper case and a tab sorts before any letter.
+The lines of a variant thus come in the alphabetical order of their keys, since the keys are upper case, a hyphen sorts before any letter, a tab sorts before a hyphen, and no key is the start of another followed by a hyphen.
+The `SOURCE-` lines come in the order `SOURCE-FORMAT`, `SOURCE-HASH`, `SOURCE-TYPE`, after `SLANT` and before `STYLE`.
 The lines of the three keys without a field are the bare keys, which sort as the keys do.
 Two `IGNORE` lines come in the order of their first code points.
 
@@ -244,12 +265,18 @@ A reader MUST reject a file:
 - that is not valid UTF-8, begins with a byte order mark, or is not in NFC;
 - with a line of an unknown key, too few or too many fields, or a field that is not of its form;
 - with a text field that has a backslash that is no escape;
-- with no `HASH` line, or with two top lines of one key;
-- with no variant, or with two variants of one number;
+- with a top line of a key other than `NAME`, or with two `NAME` top lines;
+- with no variant and no `NAME` line, or with two variants of one number;
 - with a top line after a variant number, or a variant line before any;
-- with a variant that has no `PXFM` line, or two lines of a key other than `IGNORE`;
-- whose `FORMAT` or `TYPE` lines break the rules of [Top lines](#top-lines);
+- with a variant that has no `PXFM`, `SOURCE-FORMAT`, `SOURCE-HASH` or `SOURCE-TYPE` line, or two lines of a key other than `IGNORE`;
 - whose lines are not in canonical order.
+
+## Changes from version 1
+
+- `FORMAT`, `HASH` and `TYPE` were top lines; they are now the variant lines `SOURCE-FORMAT`, `SOURCE-HASH` and `SOURCE-TYPE`, which every variant has, so the variants of a typeface can come from several source files.
+- The top line `NAME` is new: the name of the typeface.
+- The variant line `FAMILY` is gone; the family name is the `NAME` of the typeface.
+- The variant line `FULLNAME` is now `NAME`.
 
 ## Line ends in git
 

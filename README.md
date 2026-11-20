@@ -15,7 +15,7 @@ The fonts of a database can be browsed and edited with [pxfe](https://github.com
 pxgl/<2>/<hash>.pxgl      glyph bitmaps
 palette/<2>/<hash>.hex    colour palettes
 pxfm/<2>/<hash>.pxfm      fonts: metrics and glyphs
-pxtf/<2>/<hash>.pxtf      typefaces: the fonts of one source file
+pxtf/<2>/<hash>.pxtf      typefaces: a name and its fonts
 ```
 
 `<hash>` is the first 32 hex digits of the SHA-256 of the file's canonical form, in lower case, and `<2>` its first two digits.
@@ -27,7 +27,7 @@ pxtf/<2>/<hash>.pxtf      typefaces: the fonts of one source file
 | [pxgl](spec/pxgl.md) | `.pxgl` | the bitmap of one glyph |
 | [hex](spec/hex.md) | `.hex` | the colours of a glyph of several colours |
 | [pxfm](spec/pxfm.md) | `.pxfm` | a font: its stated metrics, and the code, advance, place, bitmap and palette of each glyph |
-| [pxtf](spec/pxtf.md) | `.pxtf` | a typeface: the source file, and what it states about each of its fonts |
+| [pxtf](spec/pxtf.md) | `.pxtf` | a typeface: its name, and for each of its fonts the source file and what it states about the font |
 | [pxfp](spec/pxfp.md) | `.pxfp` | a zip package of one font with its glyphs and palettes |
 | [pxtp](spec/pxtp.md) | `.pxtp` | a zip package of one typeface with its fonts, glyphs and palettes |
 | [pxfdb](spec/pxfdb.md) | `.pxfdb` | the whole database in one SQLite file, for queries |

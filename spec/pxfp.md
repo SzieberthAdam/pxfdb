@@ -58,9 +58,9 @@ The zip file already carries the hashes of everything it holds, so a reader and 
 A writer SHOULD name it `<family>-<style>.pxfp`, so that people can tell packages apart:
 
 - The family and the style are those of the first typeface variant of the library that names this pxfm file: the pxtf files in ascending order of their hash, then the variants of a file in ascending order of their number.
-- Each is the slug of the `FAMILY` and the `STYLE` of that variant: its lower-case form with every run of characters other than letters and digits made one hyphen, none at the start or the end.
-  A part that the variant does not state is left out, with its hyphen: `dina-bold.pxfp`.
-- If no pxtf file names the pxfm file, or the variant states neither, the name is the hash of the pxfm file, `<hash>.pxfp`.
+- The family is the slug of the `NAME` of that typeface, and the style the slug of the `STYLE` of that variant; the slug of a name is its lower-case form with every run of characters other than letters and digits made one hyphen, none at the start or the end.
+  A part that is not stated is left out, with its hyphen: `dina-bold.pxfp`.
+- If no pxtf file names the pxfm file, or neither is stated, the name is the hash of the pxfm file, `<hash>.pxfp`.
 - If a file of that name is there already with other bytes, the writer adds `-` and the first 8 hex digits of the pxfm hash before the extension.
 
 This name is recommended, not required.
