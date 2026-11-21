@@ -1,5 +1,10 @@
 NAME	Superpowers Ninja Adventure
 0001
+	COPYRIGHT	Created at Sparklin Labs by Pixel-boy. Released under Creative Commons Zero (CC0) 1.0.
+	DESIGNER	Pixel-boy
+	DESIGNERURL	https://twitter.com/2pblog1
+	LICENSE	Creative Commons Zero (CC0) 1.0
+	LICENSEURL	https://creativecommons.org/publicdomain/zero/1.0/
 	NAME	Font 8x8
 	PXFM	EC60EB06E1C76951CDB42677D8980D0C
 	SOURCE-FORMAT	PNG
@@ -13,6 +18,7 @@ NAME	Superpowers Ninja Adventure
 	TERMS-EVIDENCE	They are released under the Creative Commons Zero (CC0) license.
 	TERMS-LICENSE	CC0 1.0
 	TERMS-MODIFY	yes
+	TERMS-NOTE	Attribution is not required but appreciated; a link to http://superpowers-html5.com/ is welcome.
 	TERMS-PROVENANCE	original
 	TERMS-REDISTRIBUTE	yes
 	TERMS-REDISTRIBUTE-MODIFIED	yes
@@ -20,7 +26,14 @@ NAME	Superpowers Ninja Adventure
 	TERMS-SPDX	CC0-1.0
 	TERMS-TEXT	36FFD9DC085D529A7E60E1276D73AE5A
 	TERMS-TEXT	D01B7D0BA0EEE82574DE0A590A3F354C
+	VENDOR	Sparklin Labs
+	VENDORURL	http://superpowers-html5.com/
 0002
+	COPYRIGHT	Created at Sparklin Labs by Pixel-boy. Released under Creative Commons Zero (CC0) 1.0.
+	DESIGNER	Pixel-boy
+	DESIGNERURL	https://twitter.com/2pblog1
+	LICENSE	Creative Commons Zero (CC0) 1.0
+	LICENSEURL	https://creativecommons.org/publicdomain/zero/1.0/
 	NAME	Font 30x30
 	PXFM	855A3627F162AFEC20A107BB24F49646
 	SOURCE-FORMAT	PXFE
@@ -34,6 +47,7 @@ NAME	Superpowers Ninja Adventure
 	TERMS-EVIDENCE	They are released under the Creative Commons Zero (CC0) license.
 	TERMS-LICENSE	CC0 1.0
 	TERMS-MODIFY	yes
+	TERMS-NOTE	Attribution is not required but appreciated; a link to http://superpowers-html5.com/ is welcome.
 	TERMS-PROVENANCE	original
 	TERMS-REDISTRIBUTE	yes
 	TERMS-REDISTRIBUTE-MODIFIED	yes
@@ -41,3 +55,5 @@ NAME	Superpowers Ninja Adventure
 	TERMS-SPDX	CC0-1.0
 	TERMS-TEXT	36FFD9DC085D529A7E60E1276D73AE5A
 	TERMS-TEXT	D01B7D0BA0EEE82574DE0A590A3F354C
+	VENDOR	Sparklin Labs
+	VENDORURL	http://superpowers-html5.com/

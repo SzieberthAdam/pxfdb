@@ -1,7 +1,10 @@
 NAME	Superpowers Medieval Fantasy
 0001
+	COPYRIGHT	Created at Sparklin Labs by Pixel-boy. Released under Creative Commons Zero (CC0) 1.0.
 	DESIGNER	Pixel-boy
 	DESIGNERURL	https://twitter.com/2pblog1
+	LICENSE	Creative Commons Zero (CC0) 1.0
+	LICENSEURL	https://creativecommons.org/publicdomain/zero/1.0/
 	NAME	Font 1
 	PXFM	6487520C0DD39CA59D4CF9E4C193C6EE
 	SOURCE-FORMAT	PNG
@@ -12,8 +15,10 @@ NAME	Superpowers Medieval Fantasy
 	TERMS-COMMERCIAL	yes
 	TERMS-CONFIDENCE	high
 	TERMS-DATE	2026-11-21
+	TERMS-EVIDENCE	Creative Commons Zero: http://creativecommons.org/publicdomain/zero/1.0/
 	TERMS-LICENSE	CC0 1.0
 	TERMS-MODIFY	yes
+	TERMS-NOTE	Attribution is not required but appreciated; a link to http://superpowers-html5.com/ is welcome.
 	TERMS-PROVENANCE	original
 	TERMS-REDISTRIBUTE	yes
 	TERMS-REDISTRIBUTE-MODIFIED	yes
@@ -21,9 +26,14 @@ NAME	Superpowers Medieval Fantasy
 	TERMS-SPDX	CC0-1.0
 	TERMS-TEXT	36FFD9DC085D529A7E60E1276D73AE5A
 	TERMS-TEXT	6CD2E262C071E3ED73A45E167A4A2408
+	VENDOR	Sparklin Labs
+	VENDORURL	http://superpowers-html5.com/
 0002
+	COPYRIGHT	Created at Sparklin Labs by Pixel-boy. Released under Creative Commons Zero (CC0) 1.0.
 	DESIGNER	Pixel-boy
 	DESIGNERURL	https://twitter.com/2pblog1
+	LICENSE	Creative Commons Zero (CC0) 1.0
+	LICENSEURL	https://creativecommons.org/publicdomain/zero/1.0/
 	PXFM	BCABA6EE10DDAC80ADFE8FFD6050A9CF
 	SOURCE-FORMAT	PNG
 	SOURCE-HASH	360CD539F7FDE54CEE6FCF005D66B861
@@ -33,8 +43,10 @@ NAME	Superpowers Medieval Fantasy
 	TERMS-COMMERCIAL	yes
 	TERMS-CONFIDENCE	high
 	TERMS-DATE	2026-11-21
+	TERMS-EVIDENCE	Creative Commons Zero: http://creativecommons.org/publicdomain/zero/1.0/
 	TERMS-LICENSE	CC0 1.0
 	TERMS-MODIFY	yes
+	TERMS-NOTE	Attribution is not required but appreciated; a link to http://superpowers-html5.com/ is welcome.
 	TERMS-PROVENANCE	original
 	TERMS-REDISTRIBUTE	yes
 	TERMS-REDISTRIBUTE-MODIFIED	yes
@@ -42,3 +54,5 @@ NAME	Superpowers Medieval Fantasy
 	TERMS-SPDX	CC0-1.0
 	TERMS-TEXT	36FFD9DC085D529A7E60E1276D73AE5A
 	TERMS-TEXT	6CD2E262C071E3ED73A45E167A4A2408
+	VENDOR	Sparklin Labs
+	VENDORURL	http://superpowers-html5.com/
