@@ -1,0 +1,6 @@
+* text=auto eol=lf
+/pxgl/**/*.pxgl text eol=lf
+/palette/**/*.hex text eol=lf
+/pxfm/**/*.pxfm text eol=lf
+/pxtf/**/*.pxtf text eol=lf
+/license/**/*.txt text eol=lf

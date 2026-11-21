@@ -101,7 +101,7 @@ Importing a package places its files in a library at their library paths:
 | --- | --- |
 | `<hash>.pxtf` | `pxtf/<first 2 digits>/<hash>.pxtf` |
 | `pxfm/<hash>.pxfm` | `pxfm/<first 2 digits>/<hash>.pxfm` |
-| `pxgl/<hash>.pxgl` | `pxgl/<first 2 digits>/<hash>.pxgl` |
+| `pxgl/<hash>.pxgl` | `pxgl/<digits 1–2>/<digits 3–4>/<hash>.pxgl` |
 | `palette/<hash>.hex` | `palette/<first 2 digits>/<hash>.hex` |
 | `license/<hash>.txt` | `license/<first 2 digits>/<hash>.txt` |
 

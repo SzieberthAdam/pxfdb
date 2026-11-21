@@ -11,14 +11,14 @@ The fonts of a database can be browsed and edited with [pxfe](https://github.com
 ## Layout
 
 ```
-pxgl/<2>/<hash>.pxgl      glyph bitmaps
-palette/<2>/<hash>.hex    colour palettes
-pxfm/<2>/<hash>.pxfm      fonts: metrics and glyphs
-pxtf/<2>/<hash>.pxtf      typefaces: a name and its fonts
-license/<2>/<hash>.txt    licence texts
+pxgl/<2>/<2>/<hash>.pxgl  glyph bitmaps
+palette/<2>/<hash>.hex     colour palettes
+pxfm/<2>/<hash>.pxfm       fonts: metrics and glyphs
+pxtf/<2>/<hash>.pxtf       typefaces: a name and its fonts
+license/<2>/<hash>.txt     licence texts
 ```
 
-`<hash>` is the first 32 hex digits of the SHA-256 of the file's canonical form, in lower case, and `<2>` its first two digits.
+`<hash>` is the first 32 hex digits of the SHA-256 of the file's canonical form, in lower case, and `<2>` its first two digits; the glyph files, which are many, lie two levels deep, under their first two and then their next two digits.
 
 ## Formats
 

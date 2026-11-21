@@ -254,7 +254,7 @@ The other tables are small (about 1,170 `pxfm` and 1,040 `pxtf` rows) and have n
 `build` reads every file under `pxgl/`, `palette/`, `pxfm/`, `pxtf/` and `license/` of the root, and checks it before it is stored.
 It stops at the first file that fails, and the old database, if there is one, stays as it is.
 
-1. Each file lies at `<folder>/<2 hex digits>/<hash>.<extension>` in lower case (the extension of the folder `palette/` is `hex`, and of `license/` `txt`), any other name or place is an error; it is in canonical form already, and the hash of its canonical form is its name.
+1. Each file lies at `<folder>/<2 hex digits>/<hash>.<extension>` in lower case, a glyph file at `pxgl/<2 hex digits>/<2 hex digits>/<hash>.pxgl`, the first four digits of its hash (the extension of the folder `palette/` is `hex`, and of `license/` `txt`), any other name or place is an error; it is in canonical form already, and the hash of its canonical form is its name.
 2. A pxgl file is read as [pxgl](pxgl.md) says: rows of equal width, only pixels, at least one inked, the colours numbered in reading order.
    The row of `glyph` is made of its width, its height and the concatenated rows.
 3. A hex file is read as [hex](hex.md) says: valid colours in upper case, an alpha of `FF` not written, no colour twice, no empty line.
@@ -270,7 +270,7 @@ It stops at the first file that fails, and the old database, if there is one, st
 
 ## Converting the database into the files
 
-`export` writes `pxgl/<2>/<hash>.pxgl`, `palette/<2>/<hash>.hex`, `pxfm/…`, `pxtf/…` and `license/<2>/<hash>.txt` under the root, from the tables.
+`export` writes `pxgl/<2>/<2>/<hash>.pxgl`, `palette/<2>/<hash>.hex`, `pxfm/…`, `pxtf/…` and `license/<2>/<hash>.txt` under the root, from the tables.
 
 - A pxgl file is the rows of `pixels`, each ended with LF.
   A glyph whose colours are not numbered in reading order is refused.

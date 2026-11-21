@@ -95,7 +95,7 @@ Importing a package places its files in a library at their library paths:
 | In the package | In the library |
 | --- | --- |
 | `<hash>.pxfm` | `pxfm/<first 2 digits>/<hash>.pxfm` |
-| `pxgl/<hash>.pxgl` | `pxgl/<first 2 digits>/<hash>.pxgl` |
+| `pxgl/<hash>.pxgl` | `pxgl/<digits 1–2>/<digits 3–4>/<hash>.pxgl` |
 | `palette/<hash>.hex` | `palette/<first 2 digits>/<hash>.hex` |
 
 The package MUST be checked in full, as above, before any file is placed.

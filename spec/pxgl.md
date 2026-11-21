@@ -20,7 +20,7 @@ The capital letter A of a 5 by 5 pixel font:
 0...0
 ```
 
-Its hash is `c0fc54c2ec60cb8617b041d991da1622`, so it is stored as `pxgl/c0/c0fc54c2ec60cb8617b041d991da1622.pxgl`.
+Its hash is `c0fc54c2ec60cb8617b041d991da1622`, so it is stored as `pxgl/c0/fc/c0fc54c2ec60cb8617b041d991da1622.pxgl`.
 
 ## Pixels
 
@@ -96,7 +96,8 @@ The hash of a file is the first 32 hex digits of the SHA-256 of its canonical fo
 In a file name the hex digits are lower case.
 
 The file is named `<hash>.pxgl`.
-In a pixelglyphlib library it lies at `pxgl/<first 2 digits of the hash>/<hash>.pxgl`.
+In a pixelglyphlib library it lies at `pxgl/<digits 1 and 2 of the hash>/<digits 3 and 4>/<hash>.pxgl`.
+Glyph files are many, hundreds of thousands in a large library, so they are spread over two levels of folders, 65,536 folders in all, and a folder holds a few files.
 
 Since the name is the hash, two files with the same bitmap are one file, and a file whose bitmap changes gets a new name.
 A reader that finds a file by its hash SHOULD check that the hash of its canonical form is its name.
