@@ -2,7 +2,7 @@
 
 Version 2.
 
-A pxfdb file is an SQLite database that holds the whole text database of a pixelglyphlib library: every [pxgl](pxgl.md) glyph file, every [hex](hex.md) palette file, every [pxfm](pxfm.md) metrics file and every [pxtf](pxtf.md) typeface file, orphans included.
+A pxfdb file is an SQLite database that holds the whole text database of a pixelglyphlib library: every [pxgl](pxgl.md) glyph file, every [hex](hex.md) palette file, every [pxfm](pxfm.md) metrics file, every [pxtf](pxtf.md) typeface file and every [licence text](license.md) file, orphans included.
 It is made for software and websites that have to query the library efficiently: which fonts hold a glyph, how alike two fonts are, which glyphs are drawn for a code point, which fonts have a given height.
 
 The text files stay the master and the version-controlled form.
@@ -45,7 +45,7 @@ CREATE TABLE meta (
 ) WITHOUT ROWID;
 ```
 
-`meta` holds two rows: `format` = `PXFDB` and `format_version` = `1`.
+`meta` holds two rows: `format` = `PXFDB` and `format_version` = `2`.
 
 ### glyph
 
@@ -203,7 +203,29 @@ CREATE TABLE pxtf_field (
 
 One row per other line of a variant (not `PXFM` and the `SOURCE-` lines), so a repeated key (`IGNORE`) is several rows and a key can be added to the format without a change of the schema.
 `key` is the upper-case key.
-`value` is, for a key with a text field (`COPYRIGHT`, `DESCRIPTION`, `DESIGNER`, `DESIGNERURL`, `LICENSE`, `LICENSEURL`, `NAME`, `SLANT`, `STYLE`, `TRADEMARK`, `VENDOR`, `VENDORURL`, `VERSION`, `WEIGHTNAME`, `CODEPAGE`), the text with its escapes undone; for a key without a field (`ITALIC`, `STRUCKOUT`, `UNDERLINED`), the empty string; for any other key, its fields joined by tabs, as written (`GRID` `44.487\t44.487\t0\t0\tPERGLYPH`, `IGNORE` `0000C0\t0000FF`, `CELL` `8x16`, `CHARSET` `0`, `PFM` the 32 digits in upper case).
+`value` is, for a key with a text field (`COPYRIGHT`, `DESCRIPTION`, `DESIGNER`, `DESIGNERURL`, `LICENSE`, `LICENSEURL`, `NAME`, `SLANT`, `STYLE`, `TRADEMARK`, `VENDOR`, `VENDORURL`, `VERSION`, `WEIGHTNAME`, `CODEPAGE`, `TERMS-DERIVED-FROM`, `TERMS-LICENSE`, `TERMS-SPDX`, `TERMS-EVIDENCE`, `TERMS-NOTE`, `TERMS-SOURCE`, `TERMS-UPSTREAM-HOLDER`), the text with its escapes undone; for a key without a field (`ITALIC`, `STRUCKOUT`, `UNDERLINED`), the empty string; for any other key, its fields joined by tabs, as written (`GRID` `44.487\t44.487\t0\t0\tPERGLYPH`, `IGNORE` `0000C0\t0000FF`, `CELL` `8x16`, `CHARSET` `0`, `PFM` and `TERMS-TEXT` the 32 digits in upper case, a word such as `TERMS-COMMERCIAL` `yes`, a date such as `TERMS-DATE` `2026-11-21`).
+
+### license
+
+```sql
+CREATE TABLE license (
+    hash BLOB PRIMARY KEY,
+    size INTEGER NOT NULL,
+    data BLOB NOT NULL,
+    CHECK (length(hash) = 16 AND size > 0 AND length(data) <= size)
+) WITHOUT ROWID;
+```
+
+One row per licence text file.
+`size` is the length in bytes of its canonical form, UTF-8 with the line feed at the end of every line.
+`data` is that canonical form compressed, as the `data` of an SQLite Archive (sqlar) is:
+
+- it is a zlib stream (RFC 1950) of the bytes, deflated at the highest level, when that is shorter than `size`;
+- otherwise it is the bytes themselves, uncompressed, and `length(data) = size`.
+
+So the text is `sqlar_uncompress(data, size)` where the sqlar extension is loaded, as in the `sqlite3` shell, and in a program the zlib decompression of `data` when `length(data) < size`, else `data` itself.
+The texts are long and are read one at a time, when a licence is shown, so they are kept compressed and are not searched in the database.
+The `TERMS-TEXT` rows of `pxtf_field` name these rows by the hash in their `value`, in upper-case hex: `unhex(value)` is the `hash` of the text.
 
 ## Indexes
 
@@ -229,10 +251,10 @@ The other tables are small (about 1,170 `pxfm` and 1,040 `pxtf` rows) and have n
 
 ## Converting the files into the database
 
-`build` reads every file under `pxgl/`, `palette/`, `pxfm/` and `pxtf/` of the root, and checks it before it is stored.
+`build` reads every file under `pxgl/`, `palette/`, `pxfm/`, `pxtf/` and `license/` of the root, and checks it before it is stored.
 It stops at the first file that fails, and the old database, if there is one, stays as it is.
 
-1. Each file lies at `<folder>/<2 hex digits>/<hash>.<extension>` in lower case (the extension of the folder `palette/` is `hex`), any other name or place is an error; it is in canonical form already, and the hash of its canonical form is its name.
+1. Each file lies at `<folder>/<2 hex digits>/<hash>.<extension>` in lower case (the extension of the folder `palette/` is `hex`, and of `license/` `txt`), any other name or place is an error; it is in canonical form already, and the hash of its canonical form is its name.
 2. A pxgl file is read as [pxgl](pxgl.md) says: rows of equal width, only pixels, at least one inked, the colours numbered in reading order.
    The row of `glyph` is made of its width, its height and the concatenated rows.
 3. A hex file is read as [hex](hex.md) says: valid colours in upper case, an alpha of `FF` not written, no colour twice, no empty line.
@@ -241,18 +263,21 @@ It stops at the first file that fails, and the old database, if there is one, st
    Its lines go to the columns and tables above.
    The lines must be the lines the writer would write: sorted by their bytes, each once; a file that is not is an error.
 5. A pxtf file is read by the strict reader of [pxtf](pxtf.md), and must be what the writer would write from what was read.
-   A pxfm file it names must be in the library.
-6. The glyph files, the palette files and the pxfm files that nothing names are stored all the same.
+   A pxfm file and a licence text file it names must be in the library.
+6. A licence text file is read as [license](license.md) says: UTF-8 in NFC, no control character but the tab and the line feed, not empty, in canonical form.
+   Its bytes go to the row of `license`, their length to `size`, compressed to `data`.
+7. The glyph files, the palette files, the pxfm files and the licence text files that nothing names are stored all the same.
 
 ## Converting the database into the files
 
-`export` writes `pxgl/<2>/<hash>.pxgl`, `palette/<2>/<hash>.hex`, `pxfm/…` and `pxtf/…` under the root, from the tables.
+`export` writes `pxgl/<2>/<hash>.pxgl`, `palette/<2>/<hash>.hex`, `pxfm/…`, `pxtf/…` and `license/<2>/<hash>.txt` under the root, from the tables.
 
 - A pxgl file is the rows of `pixels`, each ended with LF.
   A glyph whose colours are not numbered in reading order is refused.
 - A hex file is the colours of `colors`, a line each, six upper-case hex digits when the alpha is `FF` and eight otherwise, each ended with LF.
 - A pxfm file is made of the lines of its columns and rows, in the form of the specification: the metric lines `KEY<TAB>integer` of the columns that are not `NULL`, `RATIO<TAB>A:B`, `MONOSPACED`, `SYMBOLIC`, `COLORS<TAB>colors` when `colors` is not `NULL`, `GLYPH<TAB>code<TAB>advance<TAB>x<TAB>y[<TAB>HASH[<TAB>PALETTE]]` from the rows of `pxfm_glyph`, the code written `G+CCCCCC-VVV` and the hashes in upper case, with none for a `NULL` glyph and none for a `NULL` palette, and `KERNING<TAB>first<TAB>second<TAB>adjust`; then the lines are sorted by their bytes and each ended with LF.
 - A pxtf file has the `NAME` line at the top when `name` is not `NULL`; then each variant as its number with at least four digits and its lines: `PXFM`, `SOURCE-FORMAT`, `SOURCE-HASH` and `SOURCE-TYPE` from its row of `pxtf_variant`, and the rows of `pxtf_field` (text values escaped as in [pxtf](pxtf.md#text), keys without a field alone), sorted by their bytes, each after a tab.
+- A licence text file is the `data` of its row of `license`, decompressed when `length(data) < size`; its length must be `size`.
 
 The hash of each file made is checked against its key before anything is written.
 Then a first pass looks at every target path: a file that is there with the same bytes is left, and if one is there with other bytes (or a folder is in the way), `export` stops with an error before it has written a file.

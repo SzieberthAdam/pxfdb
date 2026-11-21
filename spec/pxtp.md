@@ -3,7 +3,7 @@
 Version 1.
 
 A pxtp file is a plain zip file that carries a pixel typeface, the fonts of one source file, from one library to another.
-It holds files of the library as they are: a [pxtf](pxtf.md) file, the [pxfm](pxfm.md) files it names, and the [pxgl](pxgl.md) files and the [hex](hex.md) palette files those name.
+It holds files of the library as they are: a [pxtf](pxtf.md) file, the [pxfm](pxfm.md) files it names, the [pxgl](pxgl.md) files and the [hex](hex.md) palette files those name, and the [licence text](license.md) files it names.
 Nothing else goes into it, and nothing but those files comes out of it when it is imported: no font JSON, no source file.
 
 The package of one font alone is a [pxfp](pxfp.md) file.
@@ -35,16 +35,17 @@ A pxtp file holds exactly:
 - at the root, one file `<hash>.pxtf`, and no other file at the root;
 - in the folder `pxfm/`, `<hash>.pxfm` for every pxfm file the pxtf file names in its `PXFM` lines, and for no other;
 - in the folder `pxgl/`, `<hash>.pxgl` for every pxgl file that those pxfm files name, and for no other;
-- in the folder `palette/`, `<hash>.hex` for every palette file that those pxfm files name in the fifth field of their glyph lines, and for no other.
+- in the folder `palette/`, `<hash>.hex` for every palette file that those pxfm files name in the fifth field of their glyph lines, and for no other;
+- in the folder `license/`, `<hash>.txt` for every licence text file the pxtf file names in its `TERMS-TEXT` lines, and for no other.
 
 All file names inside the package are of lower-case hashes, followed by the extension of the file's kind.
 The hash of a file is the first 32 hex digits of the SHA-256 of its canonical form, as the specification of its kind says.
-The name of every file inside the package MUST be the hash of its content: a pxtf file by [pxtf](pxtf.md#hash-and-file-name), a pxfm, pxgl or hex file by [pxfm](pxfm.md), [pxgl](pxgl.md) and [hex](hex.md).
+The name of every file inside the package MUST be the hash of its content: a pxtf file by [pxtf](pxtf.md#hash-and-file-name), a pxfm, pxgl, hex or licence text file by [pxfm](pxfm.md), [pxgl](pxgl.md), [hex](hex.md) and [license](license.md).
 
-The `pxfm/`, `pxgl/` and `palette/` folders are flat.
+The `pxfm/`, `pxgl/`, `palette/` and `license/` folders are flat.
 They have no prefix folders; the importer places each file at its library path.
 A pxfm file that names no glyph file at all is possible, and a package whose pxfm files name none has no `pxgl/` folder.
-A package whose pxfm files are all of fonts of one colour has no `palette/` folder.
+A package whose pxfm files are all of fonts of one colour has no `palette/` folder, and one whose pxtf file names no licence text has no `license/` folder.
 
 The zip file has no other entries: no other folder, no entry for a folder, no other file at the root.
 An entry name has no backslash, no leading slash and no `..` part.
@@ -88,7 +89,9 @@ A reader MUST check the whole package, by the names and contents of its entries 
 - a pxfm file does not pass the strict reader of [pxfm](pxfm.md), read with the glyph files of the package;
 - a pxfm file the pxtf file names is missing, or a pxfm file in `pxfm/` is not named by it;
 - a pxgl file that a pxfm file names is missing, or a pxgl file is named by no pxfm file;
-- a palette file that a pxfm file names is missing, or a palette file is named by no pxfm file.
+- a palette file that a pxfm file names is missing, or a palette file is named by no pxfm file;
+- a licence text file does not pass the reader of [license](license.md);
+- a licence text file that the pxtf file names is missing, or a licence text file in `license/` is not named by it.
 
 The hash check is in full: every entry's name is compared with the hash of its canonical content, whatever the package file is called.
 
@@ -100,6 +103,7 @@ Importing a package places its files in a library at their library paths:
 | `pxfm/<hash>.pxfm` | `pxfm/<first 2 digits>/<hash>.pxfm` |
 | `pxgl/<hash>.pxgl` | `pxgl/<first 2 digits>/<hash>.pxgl` |
 | `palette/<hash>.hex` | `palette/<first 2 digits>/<hash>.hex` |
+| `license/<hash>.txt` | `license/<first 2 digits>/<hash>.txt` |
 
 The package MUST be checked in full, as above, before any file is placed.
 A file that is in the library already with the same bytes is skipped.
@@ -107,7 +111,7 @@ If a file is there with other bytes, the importer MUST place nothing and report 
 
 An imported package brings only these files.
 It brings no font JSON and no source file, so the library has no font JSON copy that names the imported pxtf file.
-The live database of a library is its pxtf and pxfm files and the pxgl and palette files they name; the font JSONs and source files are not part of it.
+The live database of a library is its pxtf and pxfm files and the pxgl, palette and licence text files they name; the font JSONs and source files are not part of it.
 Nothing deletes files by itself, so what the package brought stays until the owner removes it with `python -m pixelglyphlib.remove`.
 
 ## Reference implementation

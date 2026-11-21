@@ -6,7 +6,6 @@ Every file is named by the hash of its canonical form, so the same glyph, palett
 The files are text, so they can be read, edited and compared in any editor and kept in git.
 
 The formats are specified in the [spec](spec/) folder.
-The reference implementation, which reads fonts of many formats into the database and writes them back, is [pixelglyphlib](https://github.com/SzieberthAdam/pixelglyphlib).
 The fonts of a database can be browsed and edited with [pxfe](https://github.com/SzieberthAdam/pxfe), a pixel font editor.
 
 ## Layout
@@ -16,6 +15,7 @@ pxgl/<2>/<hash>.pxgl      glyph bitmaps
 palette/<2>/<hash>.hex    colour palettes
 pxfm/<2>/<hash>.pxfm      fonts: metrics and glyphs
 pxtf/<2>/<hash>.pxtf      typefaces: a name and its fonts
+license/<2>/<hash>.txt    licence texts
 ```
 
 `<hash>` is the first 32 hex digits of the SHA-256 of the file's canonical form, in lower case, and `<2>` its first two digits.
@@ -27,7 +27,8 @@ pxtf/<2>/<hash>.pxtf      typefaces: a name and its fonts
 | [pxgl](spec/pxgl.md) | `.pxgl` | the bitmap of one glyph |
 | [hex](spec/hex.md) | `.hex` | the colours of a glyph of several colours |
 | [pxfm](spec/pxfm.md) | `.pxfm` | a font: its stated metrics, and the code, advance, place, bitmap and palette of each glyph |
-| [pxtf](spec/pxtf.md) | `.pxtf` | a typeface: its name, and for each of its fonts the source file and what it states about the font |
+| [pxtf](spec/pxtf.md) | `.pxtf` | a typeface: its name, and for each of its fonts the source file, what it states about the font, and what the licence allows |
+| [license](spec/license.md) | `.txt` | the text of a licence or of a readme with terms of use |
 | [pxfp](spec/pxfp.md) | `.pxfp` | a zip package of one font with its glyphs and palettes |
 | [pxtp](spec/pxtp.md) | `.pxtp` | a zip package of one typeface with its fonts, glyphs and palettes |
 | [pxfdb](spec/pxfdb.md) | `.pxfdb` | the whole database in one SQLite file, for queries |

@@ -3,7 +3,7 @@
 Version 2.
 
 A pxtf file describes a typeface: its name and its fonts.
-For each font (each variant) it tells the source file the font is read from and its format, what the source states about that font, how the font is read from it, and the hash of the font's [pxfm](pxfm.md) file.
+For each font (each variant) it tells the source file the font is read from and its format, what the source states about that font, what its licence lets one do with it, how the font is read from it, and the hash of the font's [pxfm](pxfm.md) file.
 Following typographic tradition, a typeface is a family of fonts, and a font is one of its variants with its own metrics and glyphs, which the pxfm file holds.
 A source file can hold several fonts, such as the sizes of a Windows FON file or the 8 and the 9 dots wide reading of a VGA font dump; each is a variant, numbered from 1.
 The variants of a typeface can come from one source file or from several.
@@ -48,9 +48,9 @@ Its first font is the one whose metrics and glyphs the pxfm file `fbb120e8372cdf
 ## What it holds
 
 - The name of the typeface.
-- For each variant: the hash of its source file, the format of that file and how it is read, what the source states about the font (its name, copyright, licence, weight name, slant, italic, underlined and struck-out, and the like), the options that the font is read with, and the hash of its pxfm file.
+- For each variant: the hash of its source file, the format of that file and how it is read, what the source states about the font (its name, copyright, licence, weight name, slant, italic, underlined and struck-out, and the like), the terms of its licence as the library reads them and the hashes of the licence texts, the options that the font is read with, and the hash of its pxfm file.
 
-Left out are the original name of the source file, where it was found, and what the library made of the font: its id, notes, whether it is approved, and measurements such as how well its outlines lie on the pixel grid.
+Left out are the original name of the source file, where it was found, and what else the library made of the font: its id, notes, whether it is approved, and measurements such as how well its outlines lie on the pixel grid.
 What the font looks like and measures is in its pxfm file, not here.
 
 ## Encoding and canonical form
@@ -124,6 +124,13 @@ Otherwise it is written as the shortest decimal that reads back as the same IEEE
 If its decimal exponent is below -4 or 16 and above, it is written in scientific notation with an upper-case `E` and a signed exponent of at least two digits, such as `1E-05`.
 This is Python's `repr` of a `float`, made upper case.
 
+### Words and dates
+
+A word is one of a fixed list of values that its key names, written in lower-case ASCII letters, digits and hyphens, such as `yes` or `not-stated`.
+A reader MUST reject a word that is not in the list of its key.
+
+A date is written `YYYY-MM-DD`, as in ISO 8601, such as `2026-11-21`.
+
 ### Hashes and code points
 
 A hash is written as 32 upper-case hex digits: the first 32 hex digits of the SHA-256 of the canonical form of the file it names.
@@ -141,7 +148,7 @@ A typeface with no variant MUST have a `NAME` line.
 
 ## Variant lines
 
-Each key occurs at most once in a variant, except `IGNORE`.
+Each key occurs at most once in a variant, except `IGNORE`, `TERMS-TEXT` and `TERMS-OBLIGATION`.
 `PXFM`, `SOURCE-FORMAT`, `SOURCE-HASH` and `SOURCE-TYPE` are the keys every variant MUST have.
 
 ### PXFM
@@ -217,6 +224,119 @@ A reader MUST reject one of them with a field.
 
 For a source that states nothing, such as a raw dump, these are what the library's descriptor of it says.
 
+### Licence terms
+
+These keys tell what the licence of the font lets one do with it, as the library reads the terms that apply now.
+Unlike the keys above, they are not copied from the source: they are the library's reading of the licence, the readme and the other terms of the font, and they are written again when that reading changes.
+Every one of them can be left out; a variant with none of them has not been looked at.
+They all begin with `TERMS-`, so they stand together among the lines of a variant.
+
+| Key | Fields | Meaning |
+| --- | --- | --- |
+| `TERMS-CLASS` | word: licence class | the kind of licence |
+| `TERMS-COMMERCIAL` | word: permission | whether the font can be used in commercial work |
+| `TERMS-CONFIDENCE` | word: `high`, `medium` or `low` | how sure the reading is |
+| `TERMS-DATE` | date | when the terms were last checked |
+| `TERMS-DERIVED-FROM` | text | what the font is drawn after, such as `IBM VGA ROM font` |
+| `TERMS-EVIDENCE` | text | the sentence of the terms that the reading rests on |
+| `TERMS-LICENSE` | text | the name of the licence, such as `CC BY-SA 4.0` or `Typodermic Desktop License` |
+| `TERMS-MODIFY` | word: permission | whether the font can be changed |
+| `TERMS-NOTE` | text | an unusual condition, or how the terms have changed, such as `Formerly CC BY-SA, as written in this copy's font file.` |
+| `TERMS-OBLIGATION` | word: obligation | a condition of the use; one line a condition |
+| `TERMS-PROVENANCE` | word: provenance | where the design of the font comes from |
+| `TERMS-REDISTRIBUTE` | word: permission | whether the font file can be passed on unchanged |
+| `TERMS-REDISTRIBUTE-MODIFIED` | word: permission | whether a changed version can be passed on |
+| `TERMS-SOURCE` | text | where the terms were read, such as `font file`, `readme` or `web research: pixelsagas.com` |
+| `TERMS-SPDX` | text | the SPDX licence expression, where there is one, such as `CC0-1.0` or `OFL-1.1` |
+| `TERMS-TEXT` | hash | a [licence text](license.md) of the font; one line a text |
+| `TERMS-UPSTREAM-HOLDER` | text | who holds the rights of what the font is derived from |
+| `TERMS-UPSTREAM-STATUS` | word: `cleared`, `not-cleared` or `unknown` | whether the rights of what the font is derived from are cleared |
+| `TERMS-USE-LIMIT` | word: `personal-only` or `non-commercial` | to what use the font is limited when it is not free for commercial use |
+
+The licence texts named in `TERMS-TEXT` lines are those of the documents that state the terms: the licence the font is under, and the readme or notice that puts it under that licence.
+A text can be named although the source file does not ship it, such as the legal code of the licence that a TrueType font names in its name table.
+
+#### Permissions
+
+| Word | Meaning |
+| --- | --- |
+| `yes` | the terms allow it |
+| `no` | the terms forbid it |
+| `ask` | only with the permission of the holder, or with a licence bought from them |
+| `not-stated` | the terms do not say, so it is not allowed without the permission of the holder |
+| `unknown` | no terms of the font are known |
+
+#### Licence classes
+
+| Word | Licence |
+| --- | --- |
+| `cc0` | Creative Commons Zero |
+| `public-domain` | public domain, or a licence that gives it up, such as the Unlicense |
+| `ofl` | SIL Open Font License |
+| `mit` | MIT licence |
+| `gpl` | GNU General Public License |
+| `cc-by` | Creative Commons Attribution |
+| `cc-by-sa` | Creative Commons Attribution-ShareAlike |
+| `cc-by-nd` | Creative Commons Attribution-NoDerivatives |
+| `cc-by-nc` | Creative Commons Attribution-NonCommercial, with or without ShareAlike or NoDerivatives |
+| `free` | the author's own terms, free for commercial use |
+| `free-personal` | the author's own terms, free for personal use only |
+| `free-unspecified` | said to be free, with no terms of what for |
+| `shareware-demo` | shareware or a demo version |
+| `proprietary` | the holder's, with no licence granted |
+| `unknown` | no licence found |
+
+#### Obligations
+
+| Word | Meaning |
+| --- | --- |
+| `attribution` | the author must be credited |
+| `device-limit` | the licence covers a limited number of computers |
+| `embed-only` | the font can be passed on only embedded in a work, not as a font file |
+| `include-license` | the licence text must go with the font |
+| `include-notice` | the copyright notice or the readme must go with the font |
+| `no-collections` | the font cannot be put into a font collection or archive |
+| `no-embedding` | the font cannot be embedded in software or documents |
+| `no-nft-crypto` | the font cannot be used for NFTs or cryptocurrencies |
+| `no-sale` | the font cannot be sold |
+| `no-sale-alone` | the font cannot be sold by itself, only as part of a larger work |
+| `notify-author` | the author must be told of the use |
+| `only-bundled-in-project` | the font can be passed on only as part of one's own project |
+| `rename` | a changed version must have another name |
+| `rename-if-reserved-name` | a changed version cannot have the Reserved Font Name of the licence |
+| `share-alike` | a changed version must be under the same licence |
+
+#### Provenance
+
+| Word | Meaning |
+| --- | --- |
+| `original` | the author's own design |
+| `vendor-original` | the design of a vendor, such as the font of a BIOS or a video ROM |
+| `derived` | drawn after another font or lettering, which `TERMS-DERIVED-FROM` names |
+| `possibly-derived` | maybe drawn after another one, which `TERMS-DERIVED-FROM` names |
+| `unknown` | not known |
+
+`TERMS-DERIVED-FROM`, `TERMS-UPSTREAM-HOLDER` and `TERMS-UPSTREAM-STATUS` are written only with `derived` or `possibly-derived`.
+`TERMS-USE-LIMIT` is written only when `TERMS-COMMERCIAL` is not `yes`.
+
+#### Showing the terms
+
+A program that shows a font, such as a font editor, can show its terms as a table of the permissions in plain words, with the conditions below them and the licence texts a click away:
+
+| | Generic Mobile System Nuevo Regular |
+| --- | --- |
+| Licence | CC0 1.0 (`CC0-1.0`) |
+| Commercial use | allowed |
+| Changing it | allowed |
+| Passing it on | allowed |
+| Passing on a changed version | allowed |
+| Conditions | none |
+| Design | the author's own |
+| Read from | font file, high confidence, 2026-11-21 |
+| Licence texts | `36FFD9DC085D529A7E60E1276D73AE5A` |
+
+The words are shown by the meanings in the tables above.
+
 ### Reading options
 
 These say how the variant is read from the source file, as far as the variant number and `SOURCE-TYPE` do not:
@@ -251,10 +371,11 @@ The top line comes first.
 The variants follow in ascending order of their numbers, each number followed by the lines of that variant, sorted by their bytes.
 A line that would occur twice in one place is written once.
 
-The lines of a variant thus come in the alphabetical order of their keys, since the keys are upper case, a hyphen sorts before any letter, a tab sorts before a hyphen, and no key is the start of another followed by a hyphen.
+The lines of a variant thus come in the alphabetical order of their keys, since the keys are upper case, a hyphen sorts before any letter, and a tab sorts before a hyphen, so a key comes before the longer keys that begin with it: `LICENSE` before `LICENSEURL`, and `TERMS-REDISTRIBUTE` before `TERMS-REDISTRIBUTE-MODIFIED`.
+The `TERMS-` lines come last but for `UNDERLINED`, `VENDOR`, `VENDORURL`, `VERSION` and `WEIGHTNAME`.
 The `SOURCE-` lines come in the order `SOURCE-FORMAT`, `SOURCE-HASH`, `SOURCE-TYPE`, after `SLANT` and before `STYLE`.
 The lines of the three keys without a field are the bare keys, which sort as the keys do.
-Two `IGNORE` lines come in the order of their first code points.
+Two `IGNORE` lines come in the order of their first code points, two `TERMS-TEXT` lines in the order of their hashes, and two `TERMS-OBLIGATION` lines in the alphabetical order of their words.
 
 A reader MUST reject a file whose lines are not in this order.
 
@@ -268,7 +389,8 @@ A reader MUST reject a file:
 - with a top line of a key other than `NAME`, or with two `NAME` top lines;
 - with no variant and no `NAME` line, or with two variants of one number;
 - with a top line after a variant number, or a variant line before any;
-- with a variant that has no `PXFM`, `SOURCE-FORMAT`, `SOURCE-HASH` or `SOURCE-TYPE` line, or two lines of a key other than `IGNORE`;
+- with a variant that has no `PXFM`, `SOURCE-FORMAT`, `SOURCE-HASH` or `SOURCE-TYPE` line, or two lines of a key other than `IGNORE`, `TERMS-TEXT` and `TERMS-OBLIGATION`;
+- with a variant that has `TERMS-DERIVED-FROM`, `TERMS-UPSTREAM-HOLDER` or `TERMS-UPSTREAM-STATUS` and no `TERMS-PROVENANCE` of `derived` or `possibly-derived`, or `TERMS-USE-LIMIT` with `TERMS-COMMERCIAL` `yes`;
 - whose lines are not in canonical order.
 
 ## Changes from version 1
@@ -277,6 +399,7 @@ A reader MUST reject a file:
 - The top line `NAME` is new: the name of the typeface.
 - The variant line `FAMILY` is gone; the family name is the `NAME` of the typeface.
 - The variant line `FULLNAME` is now `NAME`.
+- The licence terms are new: the `TERMS-` keys, and the [licence text](license.md) files that `TERMS-TEXT` names.
 
 ## Line ends in git
 
